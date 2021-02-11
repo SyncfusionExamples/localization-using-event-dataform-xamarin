@@ -24,12 +24,16 @@ namespace DataformXamarin
                 Localization.Culture = ci;
                 DependencyService.Get<ILocalize>().SetLocale(CultureInfo.CurrentCulture);
             }
-            dataForm.DataObject = new ContactInfo();
-            dataForm.Validating += DataForm_Validating;
-
-            dataForm.AutoGeneratingDataFormItem += DataForm_AutoGeneratingDataFormItem;
+            dataForm.DataObject = new ContactInfo();          
             base.OnAttachedTo(bindable);
+            this.WireEvents();
         }
+        private void WireEvents()
+        {
+            this.dataForm.Validating += DataForm_Validating;
+            this.dataForm.AutoGeneratingDataFormItem += DataForm_AutoGeneratingDataFormItem;
+        }
+
         private void DataForm_AutoGeneratingDataFormItem(object sender, AutoGeneratingDataFormItemEventArgs e)
         {
             if (e.DataFormItem != null)
@@ -98,6 +102,16 @@ namespace DataformXamarin
                     e.ErrorMessage = Localization.AddressEmptyString;
                 }
             }
+        }
+        protected override void OnDetachingFrom(SfDataForm bindable)
+        {
+            base.OnDetachingFrom(bindable);
+            this.UnWireEvents();
+        }
+        private void UnWireEvents()
+        {
+            this.dataForm.Validating -= DataForm_Validating;
+            this.dataForm.AutoGeneratingDataFormItem -= DataForm_AutoGeneratingDataFormItem;
         }
     }
 }
